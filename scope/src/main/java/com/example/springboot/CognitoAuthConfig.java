@@ -25,6 +25,12 @@ import java.util.stream.Collectors;
 public class CognitoAuthConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        // Allow all requests without authentication
+	/*
+        http.authorizeRequests()
+            .anyRequest().permitAll();
+	return http.build();
+	*/
 
         http.csrf().disable();
 
@@ -65,12 +71,9 @@ public class CognitoAuthConfig {
         public Collection<GrantedAuthority> convert(Jwt jwt) {
             Collection<GrantedAuthority> authorities = delegate.convert(jwt);
             System.out.println("JWT Claims: " + jwt.getClaims());
-            System.out.println("Granted authorities: " + authorities.stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.joining(", ")));
+            System.out.println("Granted authorities: " + authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(", ")));
             return authorities;
         }
     }
-
 }
 
