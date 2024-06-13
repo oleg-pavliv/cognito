@@ -1,0 +1,27 @@
+-- setup users
+
+export AWS_PROFILE=ns
+
+aws cognito-idp create-user-pool-client --user-pool-id us-east-1_EkD8wQIPs  --client-name my-client --generate-secret --explicit-auth-flows "ALLOW_USER_PASSWORD_AUTH" "ALLOW_REFRESH_TOKEN_AUTH"
+
+aws cognito-idp admin-create-user --user-pool-id  us-east-1_EkD8wQIPs --username my-admin --temporary-password TempPwd123_ --user-attributes Name=email,Value=o.p@yahoo.com
+
+aws cognito-idp initiate-auth --auth-flow USER_PASSWORD_AUTH --client-id 39mes6d2ijevp78nk9ki748d2a --auth-parameters USERNAME=o.p@amazon.com,PASSWORD=TempPwd123_,SECRET_HASH=7Vpk6g=
+
+aws cognito-idp respond-to-auth-challenge --client-id 27ock7apccd1hh3pa36jsucg8d --challenge-name NEW_PASSWORD_REQUIRED  --challenge-responses USERNAME=my-admin,NEW_PASSWORD=NewPassword123_,SECRET_HASH=7Vpk6g= --session "AYd.."
+
+aws cognito-idp admin-update-user-attributes --user-pool-id us-east-1_EkD8wQIPs --username my-viewer --user-attributes Name=email_verified,Value=true
+
+-- get token
+
+curl -X POST --data @oleg-pavliv.json -H 'X-Amz-Target: AWSCognitoIdentityProviderService.InitiateAuth' -H 'Content-Type: application/x-amz-json-1.1' https://cognito-idp.us-east-1.amazonaws.com/ | jq -r '.AuthenticationResult.AccessToken'
+
+-- call API
+
+https --auth-type bearer -a "e.."  http://localhost:8080/hello
+
+
+-- modify pwd
+
+aws cognito-idp forgot-password --client-id 39mes6d2ijevp78nk9ki748d2a --username cplus-viewer --secret-hash uCko=
+aws cognito-idp confirm-forgot-password  --client-id 39mes6d2ijevp78nk9ki748d2a --username cplus-viewer --confirmation-code 721051 --password NewPassword123_  --secret-hash uCFwOLbRko=
